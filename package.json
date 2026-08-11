@@ -13,7 +13,7 @@
     "build:fixture": "node scripts/build-data.js --source data/fixtures --out data/fixtures/generated --allow-partial && node scripts/build-rules.js --out data/fixtures/generated",
     "prepare:data": "npm run sync:wcag && npm run build:data && npm run build:fonts",
     "pretest": "npm run build:fixture && npm run build:fonts",
-    "test": "WCAG_DATA_DIR=data/fixtures/generated node --test 'test/*.test.js'",
+    "test": "node --env-file=.env.test --test test/*.test.js",
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
     "build:rules": "node scripts/build-rules.js",
