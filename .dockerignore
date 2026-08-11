@@ -1,0 +1,10 @@
+node_modules
+npm-debug.log
+.git
+.github
+.env
+coverage
+data/source
+data/generated
+data/fixtures/generated
+public/fonts

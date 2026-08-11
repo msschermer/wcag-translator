@@ -1,0 +1,935 @@
+{
+  "version": "3.0.0",
+  "source": "wcag-translator",
+  "description": "Developer language mappings maintained by WCAG Translator. This is NOT W3C content. Each phrase maps engineering vocabulary to the success criteria a developer describing that problem is most likely reaching for.",
+  "terms": [
+    {
+      "phrase": "button has no accessible name",
+      "criteria": [
+        "4.1.2"
+      ],
+      "keywords": [
+        "button",
+        "accessible name",
+        "control",
+        "unnamed",
+        "unlabeled"
+      ],
+      "requires": [
+        "button|control|link|icon|element",
+        "name|label|accessible name"
+      ]
+    },
+    {
+      "phrase": "icon button with no label",
+      "criteria": [
+        "4.1.2",
+        "1.1.1"
+      ],
+      "keywords": [
+        "icon",
+        "button",
+        "label",
+        "svg",
+        "aria-label"
+      ],
+      "requires": [
+        "icon|svg|glyph",
+        "button|label|name"
+      ]
+    },
+    {
+      "phrase": "missing alt text",
+      "criteria": [
+        "1.1.1"
+      ],
+      "keywords": [
+        "alt",
+        "alt text",
+        "image",
+        "img",
+        "alternative",
+        "non-text"
+      ],
+      "requires": [
+        "alt|alt text|alternative text|image|img|picture|graphic|icon",
+        "alt|alternative|missing|empty|blank|undescribed|description|describe"
+      ]
+    },
+    {
+      "phrase": "decorative image is announced by the screen reader",
+      "criteria": [
+        "1.1.1"
+      ],
+      "keywords": [
+        "decorative",
+        "image",
+        "screen reader",
+        "announced",
+        "hidden"
+      ],
+      "requires": [
+        "decorative|spacer",
+        "image|img"
+      ]
+    },
+    {
+      "phrase": "text contrast is too low",
+      "criteria": [
+        "1.4.3",
+        "1.4.6"
+      ],
+      "keywords": [
+        "contrast",
+        "color",
+        "colour",
+        "ratio",
+        "text",
+        "grey",
+        "gray",
+        "faint"
+      ],
+      "requires": [
+        "contrast|ratio|faint|washed",
+        "text|color|colour|foreground|background"
+      ]
+    },
+    {
+      "phrase": "icon or border contrast is too low",
+      "criteria": [
+        "1.4.11"
+      ],
+      "keywords": [
+        "contrast",
+        "icon",
+        "border",
+        "outline",
+        "non-text",
+        "graphical"
+      ],
+      "requires": [
+        "contrast",
+        "icon|border|outline|graphic|component"
+      ]
+    },
+    {
+      "phrase": "layout breaks when the browser is zoomed",
+      "criteria": [
+        "1.4.4",
+        "1.4.10"
+      ],
+      "keywords": [
+        "zoom",
+        "resize",
+        "reflow",
+        "200",
+        "400",
+        "horizontal scroll"
+      ],
+      "requires": [
+        "zoom|resize|reflow|scale"
+      ]
+    },
+    {
+      "phrase": "keyboard navigation does not work",
+      "criteria": [
+        "2.1.1",
+        "2.1.3"
+      ],
+      "keywords": [
+        "keyboard",
+        "tabbing",
+        "navigation",
+        "arrow keys",
+        "enter key",
+        "space bar"
+      ],
+      "requires": [
+        "keyboard|tabbing|keypress|tab key|arrow key|enter key"
+      ]
+    },
+    {
+      "phrase": "keyboard focus is trapped",
+      "criteria": [
+        "2.1.2"
+      ],
+      "keywords": [
+        "trap",
+        "trapped",
+        "stuck",
+        "modal",
+        "dialog",
+        "escape",
+        "keyboard",
+        "focus"
+      ],
+      "requires": [
+        "trap|trapped|stuck|cannot leave|can not leave"
+      ]
+    },
+    {
+      "phrase": "focus indicator is not visible",
+      "criteria": [
+        "2.4.7"
+      ],
+      "keywords": [
+        "focus",
+        "outline",
+        "indicator",
+        "visible",
+        "ring",
+        "highlight"
+      ],
+      "requires": [
+        "focus|outline|ring|indicator",
+        "visible|invisible|missing|removed|see|hidden"
+      ]
+    },
+    {
+      "phrase": "focus is hidden behind a sticky header",
+      "criteria": [
+        "2.4.11",
+        "2.4.12"
+      ],
+      "keywords": [
+        "focus",
+        "obscured",
+        "hidden",
+        "sticky",
+        "header",
+        "overlay",
+        "banner",
+        "covered"
+      ],
+      "requires": [
+        "focus",
+        "sticky|header|overlay|banner|obscure|cover|behind|underneath"
+      ]
+    },
+    {
+      "phrase": "tab order does not match the visual order",
+      "criteria": [
+        "2.4.3",
+        "1.3.2"
+      ],
+      "keywords": [
+        "tab order",
+        "tabindex",
+        "sequence",
+        "order",
+        "focus order"
+      ],
+      "requires": [
+        "tab|focus|reading",
+        "order|sequence"
+      ]
+    },
+    {
+      "phrase": "heading structure is wrong",
+      "criteria": [
+        "1.3.1",
+        "2.4.6",
+        "2.4.10"
+      ],
+      "keywords": [
+        "heading",
+        "structure",
+        "semantic",
+        "h1",
+        "h2",
+        "h3",
+        "hierarchy",
+        "skipped"
+      ],
+      "requires": [
+        "heading|h1|h2|h3|hierarchy"
+      ]
+    },
+    {
+      "phrase": "form field has no label",
+      "criteria": [
+        "1.3.1",
+        "3.3.2",
+        "4.1.2"
+      ],
+      "keywords": [
+        "form",
+        "label",
+        "input",
+        "field",
+        "placeholder",
+        "textbox"
+      ],
+      "requires": [
+        "form|input|field|textbox|select|checkbox|radio",
+        "label|name|placeholder"
+      ]
+    },
+    {
+      "phrase": "error message is not announced",
+      "criteria": [
+        "3.3.1",
+        "4.1.3"
+      ],
+      "keywords": [
+        "error",
+        "validation",
+        "announce",
+        "screen reader",
+        "message",
+        "invalid"
+      ],
+      "requires": [
+        "error|validation|invalid",
+        "announce|read|screen reader|notify|speak"
+      ]
+    },
+    {
+      "phrase": "live region does not announce updates",
+      "criteria": [
+        "4.1.3"
+      ],
+      "keywords": [
+        "live region",
+        "aria-live",
+        "status",
+        "toast",
+        "announcement",
+        "snackbar",
+        "alert"
+      ],
+      "requires": [
+        "live|toast|status|snackbar|alert",
+        "announce|update|region|read"
+      ]
+    },
+    {
+      "phrase": "link text is vague",
+      "criteria": [
+        "2.4.4",
+        "2.4.9"
+      ],
+      "keywords": [
+        "link",
+        "purpose",
+        "click here",
+        "read more",
+        "learn more",
+        "anchor"
+      ],
+      "requires": [
+        "link|anchor",
+        "vague|ambiguous|click here|read more|learn more|purpose|generic"
+      ]
+    },
+    {
+      "phrase": "page title is missing or duplicated",
+      "criteria": [
+        "2.4.2"
+      ],
+      "keywords": [
+        "title",
+        "page title",
+        "document title",
+        "head",
+        "tab title"
+      ],
+      "requires": [
+        "title",
+        "page|document|tab|head"
+      ]
+    },
+    {
+      "phrase": "language attribute is missing",
+      "criteria": [
+        "3.1.1",
+        "3.1.2"
+      ],
+      "keywords": [
+        "lang",
+        "language",
+        "html",
+        "locale",
+        "pronunciation"
+      ],
+      "requires": [
+        "lang|language|locale"
+      ]
+    },
+    {
+      "phrase": "content changes unexpectedly on focus or input",
+      "criteria": [
+        "3.2.1",
+        "3.2.2"
+      ],
+      "keywords": [
+        "change",
+        "context",
+        "focus",
+        "input",
+        "submit",
+        "redirect",
+        "auto"
+      ],
+      "requires": [
+        "change|redirect|submit|reload|jump",
+        "focus|input|select|dropdown|context"
+      ]
+    },
+    {
+      "phrase": "tap target is too small",
+      "criteria": [
+        "2.5.8",
+        "2.5.5"
+      ],
+      "keywords": [
+        "target",
+        "size",
+        "touch",
+        "tap",
+        "24px",
+        "small",
+        "mobile"
+      ],
+      "requires": [
+        "target|tap|touch|hit area|button",
+        "small|size|24|tiny"
+      ]
+    },
+    {
+      "phrase": "dragging is the only way to do it",
+      "criteria": [
+        "2.5.7"
+      ],
+      "keywords": [
+        "drag",
+        "dragging",
+        "drag and drop",
+        "pointer",
+        "slider",
+        "reorder"
+      ],
+      "requires": [
+        "drag|dragging|drag and drop|slider|reorder"
+      ]
+    },
+    {
+      "phrase": "hover or focus content disappears too easily",
+      "criteria": [
+        "1.4.13"
+      ],
+      "keywords": [
+        "tooltip",
+        "hover",
+        "popover",
+        "dismiss",
+        "persistent",
+        "popup"
+      ],
+      "requires": [
+        "tooltip|hover|popover|popup",
+        "disappear|dismiss|vanish|hide|persist"
+      ]
+    },
+    {
+      "phrase": "authentication requires remembering or transcribing something",
+      "criteria": [
+        "3.3.8",
+        "3.3.9"
+      ],
+      "keywords": [
+        "authentication",
+        "login",
+        "password",
+        "captcha",
+        "2fa",
+        "otp",
+        "cognitive"
+      ],
+      "requires": [
+        "auth|login|password|captcha|otp|sign in"
+      ]
+    },
+    {
+      "phrase": "the same information has to be entered twice",
+      "criteria": [
+        "3.3.7"
+      ],
+      "keywords": [
+        "redundant",
+        "entry",
+        "repeat",
+        "again",
+        "autofill",
+        "billing",
+        "shipping"
+      ],
+      "requires": [
+        "repeat|again|twice|redundant|re-enter|reenter"
+      ]
+    },
+    {
+      "phrase": "video has no captions",
+      "criteria": [
+        "1.2.2",
+        "1.2.4"
+      ],
+      "keywords": [
+        "video",
+        "captions",
+        "subtitles",
+        "transcript",
+        "media"
+      ],
+      "requires": [
+        "video|media|audio",
+        "caption|subtitle|transcript"
+      ]
+    },
+    {
+      "phrase": "audio or video autoplays",
+      "criteria": [
+        "1.4.2"
+      ],
+      "keywords": [
+        "autoplay",
+        "audio",
+        "sound",
+        "video",
+        "background music"
+      ],
+      "requires": [
+        "autoplay|auto-play|plays automatically"
+      ]
+    },
+    {
+      "phrase": "carousel or animation cannot be paused",
+      "criteria": [
+        "2.2.2"
+      ],
+      "keywords": [
+        "carousel",
+        "slider",
+        "animation",
+        "pause",
+        "stop",
+        "marquee",
+        "moving"
+      ],
+      "requires": [
+        "carousel|animation|marquee|slider|moving|scrolling",
+        "pause|stop|control"
+      ]
+    },
+    {
+      "phrase": "session times out without warning",
+      "criteria": [
+        "2.2.1",
+        "2.2.6"
+      ],
+      "keywords": [
+        "timeout",
+        "session",
+        "expire",
+        "time limit",
+        "logged out"
+      ],
+      "requires": [
+        "timeout|time limit|session|expire"
+      ]
+    },
+    {
+      "phrase": "custom component does not expose its state",
+      "criteria": [
+        "4.1.2"
+      ],
+      "keywords": [
+        "aria-expanded",
+        "aria-checked",
+        "state",
+        "role",
+        "custom",
+        "widget",
+        "div"
+      ],
+      "requires": [
+        "state|role|aria|expanded|checked|selected",
+        "component|widget|custom|div|control"
+      ]
+    },
+    {
+      "phrase": "no skip link or way to bypass the nav",
+      "criteria": [
+        "2.4.1"
+      ],
+      "keywords": [
+        "skip link",
+        "skip to content",
+        "bypass",
+        "landmark",
+        "repeated"
+      ],
+      "requires": [
+        "skip|bypass",
+        "link|nav|navigation|content|block"
+      ]
+    },
+    {
+      "phrase": "flashing content",
+      "criteria": [
+        "2.3.1"
+      ],
+      "keywords": [
+        "flash",
+        "flashing",
+        "strobe",
+        "blink",
+        "seizure",
+        "epilepsy"
+      ],
+      "requires": [
+        "flash|strobe|blink|seizure|epilep"
+      ]
+    },
+    {
+      "phrase": "instructions rely on color, shape or position",
+      "criteria": [
+        "1.3.3",
+        "1.4.1"
+      ],
+      "keywords": [
+        "color only",
+        "red",
+        "green",
+        "shape",
+        "position",
+        "right side",
+        "sensory"
+      ],
+      "requires": [
+        "color only|colour only|only color|only colour|shape|position|the red|the green"
+      ]
+    },
+    {
+      "phrase": "table markup does not associate headers with data",
+      "criteria": [
+        "1.3.1"
+      ],
+      "keywords": [
+        "table",
+        "th",
+        "scope",
+        "headers",
+        "data table",
+        "layout table"
+      ],
+      "requires": [
+        "table",
+        "header|th|scope|cell"
+      ]
+    },
+    {
+      "phrase": "the visible label does not match the accessible name",
+      "criteria": [
+        "2.5.3"
+      ],
+      "keywords": [
+        "label in name",
+        "accessible name",
+        "voice control",
+        "speech recognition",
+        "mismatch"
+      ],
+      "requires": [
+        "voice control|speech recognition|dragon|visible label|label in name",
+        "match|mismatch|differ|different|activate|name"
+      ]
+    },
+    {
+      "phrase": "the autocomplete attribute is missing on the form field",
+      "criteria": [
+        "1.3.5"
+      ],
+      "keywords": [
+        "autocomplete",
+        "autofill",
+        "input purpose",
+        "address",
+        "email"
+      ],
+      "requires": [
+        "autocomplete|autofill|input purpose"
+      ]
+    },
+    {
+      "phrase": "the page is locked to one orientation",
+      "criteria": [
+        "1.3.4"
+      ],
+      "keywords": [
+        "orientation",
+        "portrait",
+        "landscape",
+        "rotate",
+        "locked"
+      ],
+      "requires": [
+        "orientation|portrait|landscape|rotate|rotation",
+        "lock|locked|force|forced|only|restrict|prevent"
+      ]
+    },
+    {
+      "phrase": "text overlaps when line height or letter spacing is increased",
+      "criteria": [
+        "1.4.12"
+      ],
+      "keywords": [
+        "text spacing",
+        "line height",
+        "letter spacing",
+        "word spacing",
+        "overlap"
+      ],
+      "requires": [
+        "text spacing|line height|letter spacing|word spacing|paragraph spacing",
+        "overlap|clip|clipped|cut off|truncated|breaks|hidden"
+      ]
+    },
+    {
+      "phrase": "the text is baked into an image",
+      "criteria": [
+        "1.4.5",
+        "1.4.9"
+      ],
+      "keywords": [
+        "image of text",
+        "text in an image",
+        "screenshot",
+        "banner"
+      ],
+      "requires": [
+        "image of text|text in an image|text baked|text as an image|text inside an image|text is an image"
+      ]
+    },
+    {
+      "phrase": "a single key shortcut fires while typing",
+      "criteria": [
+        "2.1.4"
+      ],
+      "keywords": [
+        "shortcut",
+        "hotkey",
+        "single key",
+        "accesskey",
+        "typing"
+      ],
+      "requires": [
+        "shortcut|hotkey|accesskey|access key|key binding",
+        "single|one key|letter|character|typing|while typing|remap"
+      ]
+    },
+    {
+      "phrase": "a swipe or pinch gesture is the only way to do it",
+      "criteria": [
+        "2.5.1"
+      ],
+      "keywords": [
+        "gesture",
+        "swipe",
+        "pinch",
+        "two finger",
+        "multipoint"
+      ],
+      "requires": [
+        "gesture|swipe|pinch|two finger|multi finger|multipoint|path-based"
+      ]
+    },
+    {
+      "phrase": "the action fires on mouse down and cannot be cancelled",
+      "criteria": [
+        "2.5.2"
+      ],
+      "keywords": [
+        "mousedown",
+        "pointerdown",
+        "touchstart",
+        "cancel",
+        "down event"
+      ],
+      "requires": [
+        "mousedown|mouse down|pointerdown|touchstart|down event",
+        "fire|fires|trigger|triggers|activate|activates|cancel|abort|undo"
+      ]
+    },
+    {
+      "phrase": "shaking or tilting the device is the only way to do it",
+      "criteria": [
+        "2.5.4"
+      ],
+      "keywords": [
+        "motion",
+        "shake",
+        "tilt",
+        "accelerometer",
+        "gyroscope"
+      ],
+      "requires": [
+        "shake|shaking|tilt|tilting|accelerometer|gyroscope|device motion"
+      ]
+    },
+    {
+      "phrase": "the animation ignores prefers-reduced-motion",
+      "criteria": [
+        "2.3.3"
+      ],
+      "keywords": [
+        "prefers-reduced-motion",
+        "parallax",
+        "animation",
+        "vestibular",
+        "scroll effect"
+      ],
+      "requires": [
+        "prefers-reduced-motion|reduced motion|parallax|scroll animation|motion sickness|vestibular"
+      ]
+    },
+    {
+      "phrase": "navigation or labels change between pages",
+      "criteria": [
+        "3.2.3",
+        "3.2.4"
+      ],
+      "keywords": [
+        "navigation",
+        "consistent",
+        "between pages",
+        "icon",
+        "label"
+      ],
+      "requires": [
+        "nav|navigation|menu|icon|label|button",
+        "between pages|page to page|inconsistent|not consistent|different on each|varies|reorder"
+      ]
+    },
+    {
+      "phrase": "the help link is in a different place on every page",
+      "criteria": [
+        "3.2.6"
+      ],
+      "keywords": [
+        "help",
+        "support",
+        "contact",
+        "chat",
+        "consistent"
+      ],
+      "requires": [
+        "help|support|contact|chat",
+        "different place|moves|moved|inconsistent|not consistent|varies|every page"
+      ]
+    },
+    {
+      "phrase": "the error message does not say how to fix it",
+      "criteria": [
+        "3.3.3"
+      ],
+      "keywords": [
+        "error",
+        "suggestion",
+        "how to fix",
+        "invalid",
+        "unhelpful"
+      ],
+      "requires": [
+        "error|invalid|validation",
+        "suggestion|suggest|how to fix|what to do|unhelpful|vague|does not say|no guidance"
+      ]
+    },
+    {
+      "phrase": "there is no confirmation step before a payment or legal commitment",
+      "criteria": [
+        "3.3.4",
+        "3.3.6"
+      ],
+      "keywords": [
+        "confirmation",
+        "review step",
+        "undo",
+        "reversible",
+        "payment"
+      ],
+      "requires": [
+        "confirm|confirmation|review step|undo|reversible|double check",
+        "payment|order|purchase|legal|contract|delete|irreversible|submit"
+      ]
+    },
+    {
+      "phrase": "there is no search or sitemap to find pages another way",
+      "criteria": [
+        "2.4.5"
+      ],
+      "keywords": [
+        "search",
+        "sitemap",
+        "site map",
+        "index",
+        "another way"
+      ],
+      "requires": [
+        "search|sitemap|site map|index page",
+        "no|none|missing|lack|lacks|only|another way|alternative|single"
+      ]
+    },
+    {
+      "phrase": "there is no breadcrumb showing where you are in the site",
+      "criteria": [
+        "2.4.8"
+      ],
+      "keywords": [
+        "breadcrumb",
+        "location",
+        "where you are",
+        "current page",
+        "trail"
+      ],
+      "requires": [
+        "breadcrumb|where you are|current page|current location|trail"
+      ]
+    },
+    {
+      "phrase": "the video has no audio description",
+      "criteria": [
+        "1.2.3",
+        "1.2.5"
+      ],
+      "keywords": [
+        "audio description",
+        "described video",
+        "narration",
+        "visual information"
+      ],
+      "requires": [
+        "audio description|described video|narration|narrated"
+      ]
+    },
+    {
+      "phrase": "the focus outline is too thin or too faint",
+      "criteria": [
+        "2.4.13",
+        "1.4.11"
+      ],
+      "keywords": [
+        "focus",
+        "outline",
+        "thin",
+        "faint",
+        "contrast",
+        "indicator"
+      ],
+      "requires": [
+        "focus",
+        "thin|faint|subtle|hard to see|barely|low contrast|too small|thickness"
+      ]
+    }
+  ]
+}

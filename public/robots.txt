@@ -1,0 +1,10 @@
+# WCAG Translator — https://wcag-translator.msschermer.us
+# The console is fine to index. The API is not: crawling it burns the public
+# rate limit and the responses are not pages.
+
+User-agent: *
+Allow: /$
+Disallow: /v1/
+
+# Machine readable description of the API for anyone who wants it.
+# https://wcag-translator.msschermer.us/v1/openapi.yaml

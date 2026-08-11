@@ -1,0 +1,644 @@
+{
+  "principles": [
+    {
+      "id": "perceivable",
+      "num": "1",
+      "handle": "Perceivable",
+      "title": "Information and user interface components must be presentable to users in ways they can perceive.",
+      "content": "<p>Perceivable</p>",
+      "versions": [
+        "2.0",
+        "2.1",
+        "2.2"
+      ],
+      "guidelines": [
+        {
+          "id": "text-alternatives",
+          "num": "1.1",
+          "handle": "Text Alternatives",
+          "title": "Provide text alternatives for any non-text content.",
+          "content": "<p>Text Alternatives</p>",
+          "versions": [
+            "2.0",
+            "2.1",
+            "2.2"
+          ],
+          "successcriteria": [
+            {
+              "id": "non-text-content",
+              "num": "1.1.1",
+              "alt_id": [],
+              "handle": "Non-text Content",
+              "title": "All non-text content that is presented to the user has a text alternative that serves the equivalent purpose.",
+              "content": "<p>All non-text content that is presented to the user has a text alternative that serves the equivalent purpose.</p>",
+              "versions": [
+                "2.0",
+                "2.1",
+                "2.2"
+              ],
+              "level": "A",
+              "details": [],
+              "techniques": {
+                "sufficient": [
+                  {
+                    "title": "Situation A: short description",
+                    "techniques": [
+                      {
+                        "id": "G94",
+                        "technology": "general",
+                        "title": "Providing short text alternative for non-text content"
+                      }
+                    ],
+                    "groups": [
+                      {
+                        "id": "text-equiv-all-situation-a-shorttext",
+                        "title": "Short text alternative techniques",
+                        "techniques": [
+                          {
+                            "id": "ARIA6",
+                            "technology": "aria",
+                            "title": "Using aria-label to provide labels for objects"
+                          },
+                          {
+                            "id": "H37",
+                            "technology": "html",
+                            "title": "Using alt attributes on img elements"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "title": "Situation E: CAPTCHA",
+                    "techniques": [
+                      {
+                        "and": [
+                          {
+                            "id": "G143",
+                            "technology": "general",
+                            "title": "Providing a text alternative that describes the purpose of the CAPTCHA"
+                          },
+                          {
+                            "id": "G144",
+                            "technology": "general",
+                            "title": "Ensuring that the web page contains another CAPTCHA serving the same purpose"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "advisory": [
+                  {
+                    "id": "C18",
+                    "technology": "css",
+                    "title": "Using CSS margin and padding rules instead of spacer images"
+                  }
+                ],
+                "failure": [
+                  {
+                    "id": "F65",
+                    "technology": "failures",
+                    "title": "Failure due to omitting the alt attribute or text alternative on img elements"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "adaptable",
+          "num": "1.3",
+          "handle": "Adaptable",
+          "title": "Create content that can be presented in different ways without losing information or structure.",
+          "content": "<p>Adaptable</p>",
+          "versions": [
+            "2.0",
+            "2.1",
+            "2.2"
+          ],
+          "successcriteria": [
+            {
+              "id": "info-and-relationships",
+              "num": "1.3.1",
+              "alt_id": [],
+              "handle": "Info and Relationships",
+              "title": "Information, structure, and relationships conveyed through presentation can be programmatically determined or are available in text.",
+              "content": "<p>Information, structure, and relationships conveyed through presentation can be programmatically determined or are available in text.</p>",
+              "versions": [
+                "2.0",
+                "2.1",
+                "2.2"
+              ],
+              "level": "A",
+              "details": [],
+              "techniques": {
+                "sufficient": [
+                  {
+                    "id": "H44",
+                    "technology": "html",
+                    "title": "Using label elements to associate text labels with form controls"
+                  },
+                  {
+                    "id": "H42",
+                    "technology": "html",
+                    "title": "Using h1-h6 to identify headings"
+                  },
+                  {
+                    "id": "H51",
+                    "technology": "html",
+                    "title": "Using table markup to present tabular information"
+                  }
+                ],
+                "failure": [
+                  {
+                    "id": "F111",
+                    "technology": "failures",
+                    "title": "Failure due to a control with visible label text but no accessible name"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "distinguishable",
+          "num": "1.4",
+          "handle": "Distinguishable",
+          "title": "Make it easier for users to see and hear content.",
+          "content": "<p>Distinguishable</p>",
+          "versions": [
+            "2.0",
+            "2.1",
+            "2.2"
+          ],
+          "successcriteria": [
+            {
+              "id": "contrast-minimum",
+              "num": "1.4.3",
+              "alt_id": [],
+              "handle": "Contrast (Minimum)",
+              "title": "The visual presentation of text and images of text has a contrast ratio of at least 4.5:1, except for the following:",
+              "content": "<p>The visual presentation of text and images of text has a contrast ratio of at least 4.5:1, except for the following:</p>",
+              "versions": [
+                "2.0",
+                "2.1",
+                "2.2"
+              ],
+              "level": "AA",
+              "details": [
+                {
+                  "type": "ulist",
+                  "items": [
+                    {
+                      "handle": "Large Text",
+                      "text": "Large-scale text and images of large-scale text have a contrast ratio of at least 3:1;"
+                    },
+                    {
+                      "handle": "Logotypes",
+                      "text": "Text that is part of a logo or brand name has no contrast requirement."
+                    }
+                  ]
+                }
+              ],
+              "techniques": {
+                "sufficient": [
+                  {
+                    "title": "Situation A: small text",
+                    "techniques": [
+                      {
+                        "id": "G18",
+                        "technology": "general",
+                        "title": "Ensuring that a contrast ratio of at least 4.5:1 exists between text and background behind the text"
+                      }
+                    ]
+                  },
+                  {
+                    "title": "Situation B: large text",
+                    "techniques": [
+                      {
+                        "id": "G145",
+                        "technology": "general",
+                        "title": "Ensuring that a contrast ratio of at least 3:1 exists between text and background behind the text"
+                      }
+                    ]
+                  }
+                ],
+                "failure": [
+                  {
+                    "id": "F24",
+                    "technology": "failures",
+                    "title": "Failure due to specifying foreground colors without specifying background colors"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "non-text-contrast",
+              "num": "1.4.11",
+              "alt_id": [],
+              "handle": "Non-text Contrast",
+              "title": "The visual presentation of user interface components and graphical objects has a contrast ratio of at least 3:1 against adjacent colors.",
+              "content": "<p>The visual presentation of user interface components and graphical objects has a contrast ratio of at least 3:1 against adjacent colors.</p>",
+              "versions": [
+                "2.1",
+                "2.2"
+              ],
+              "level": "AA",
+              "details": [],
+              "techniques": {
+                "sufficient": [
+                  {
+                    "id": "G195",
+                    "technology": "general",
+                    "title": "Using an author-supplied, highly visible focus indicator"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "operable",
+      "num": "2",
+      "handle": "Operable",
+      "title": "User interface components and navigation must be operable.",
+      "content": "<p>Operable</p>",
+      "versions": [
+        "2.0",
+        "2.1",
+        "2.2"
+      ],
+      "guidelines": [
+        {
+          "id": "keyboard-accessible",
+          "num": "2.1",
+          "handle": "Keyboard Accessible",
+          "title": "Make all functionality available from a keyboard.",
+          "content": "<p>Keyboard Accessible</p>",
+          "versions": [
+            "2.0",
+            "2.1",
+            "2.2"
+          ],
+          "successcriteria": [
+            {
+              "id": "keyboard",
+              "num": "2.1.1",
+              "alt_id": [],
+              "handle": "Keyboard",
+              "title": "All functionality of the content is operable through a keyboard interface without requiring specific timings for individual keystrokes.",
+              "content": "<p>All functionality of the content is operable through a keyboard interface without requiring specific timings for individual keystrokes.</p>",
+              "versions": [
+                "2.0",
+                "2.1",
+                "2.2"
+              ],
+              "level": "A",
+              "details": [],
+              "techniques": {
+                "sufficient": [
+                  {
+                    "id": "G202",
+                    "technology": "general",
+                    "title": "Ensuring keyboard control for all functionality"
+                  }
+                ],
+                "failure": [
+                  {
+                    "id": "F54",
+                    "technology": "failures",
+                    "title": "Failure due to using only pointer-specific event handlers for a function"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "no-keyboard-trap",
+              "num": "2.1.2",
+              "alt_id": [],
+              "handle": "No Keyboard Trap",
+              "title": "If keyboard focus can be moved to a component of the page using a keyboard interface, then focus can be moved away from that component using only a keyboard interface.",
+              "content": "<p>If keyboard focus can be moved to a component of the page using a keyboard interface, then focus can be moved away from that component using only a keyboard interface.</p>",
+              "versions": [
+                "2.0",
+                "2.1",
+                "2.2"
+              ],
+              "level": "A",
+              "details": [],
+              "techniques": {
+                "sufficient": [
+                  {
+                    "id": "G21",
+                    "technology": "general",
+                    "title": "Ensuring that users are not trapped in content"
+                  }
+                ],
+                "failure": [
+                  {
+                    "id": "F10",
+                    "technology": "failures",
+                    "title": "Failure due to combining multiple content formats in a way that traps users inside one format type"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "navigable",
+          "num": "2.4",
+          "handle": "Navigable",
+          "title": "Provide ways to help users navigate, find content, and determine where they are.",
+          "content": "<p>Navigable</p>",
+          "versions": [
+            "2.0",
+            "2.1",
+            "2.2"
+          ],
+          "successcriteria": [
+            {
+              "id": "bypass-blocks",
+              "num": "2.4.1",
+              "alt_id": [],
+              "handle": "Bypass Blocks",
+              "title": "A mechanism is available to bypass blocks of content that are repeated on multiple web pages.",
+              "content": "<p>A mechanism is available to bypass blocks of content that are repeated on multiple web pages.</p>",
+              "versions": [
+                "2.0",
+                "2.1",
+                "2.2"
+              ],
+              "level": "A",
+              "details": [],
+              "techniques": {
+                "sufficient": [
+                  {
+                    "id": "G1",
+                    "technology": "general",
+                    "title": "Adding a link at the top of each page that goes directly to the main content area"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "link-purpose-in-context",
+              "num": "2.4.4",
+              "alt_id": [],
+              "handle": "Link Purpose (In Context)",
+              "title": "The purpose of each link can be determined from the link text alone or from the link text together with its programmatically determined link context.",
+              "content": "<p>The purpose of each link can be determined from the link text alone or from the link text together with its programmatically determined link context.</p>",
+              "versions": [
+                "2.0",
+                "2.1",
+                "2.2"
+              ],
+              "level": "A",
+              "details": [],
+              "techniques": {
+                "sufficient": [
+                  {
+                    "id": "G91",
+                    "technology": "general",
+                    "title": "Providing link text that describes the purpose of a link"
+                  },
+                  {
+                    "id": "H30",
+                    "technology": "html",
+                    "title": "Providing link text that describes the purpose of a link for anchor elements"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "focus-visible",
+              "num": "2.4.7",
+              "alt_id": [],
+              "handle": "Focus Visible",
+              "title": "Any keyboard operable user interface has a mode of operation where the keyboard focus indicator is visible.",
+              "content": "<p>Any keyboard operable user interface has a mode of operation where the keyboard focus indicator is visible.</p>",
+              "versions": [
+                "2.0",
+                "2.1",
+                "2.2"
+              ],
+              "level": "AA",
+              "details": [],
+              "techniques": {
+                "sufficient": [
+                  {
+                    "id": "G149",
+                    "technology": "general",
+                    "title": "Using user interface components that are highlighted by the user agent when they receive focus"
+                  },
+                  {
+                    "id": "C15",
+                    "technology": "css",
+                    "title": "Using CSS to change the presentation of a user interface component when it receives focus"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "focus-not-obscured-minimum",
+              "num": "2.4.11",
+              "alt_id": [],
+              "handle": "Focus Not Obscured (Minimum)",
+              "title": "When a user interface component receives keyboard focus, the component is not entirely hidden due to author-created content.",
+              "content": "<p>When a user interface component receives keyboard focus, the component is not entirely hidden due to author-created content.</p>",
+              "versions": [
+                "2.2"
+              ],
+              "level": "AA",
+              "details": [],
+              "techniques": {
+                "sufficient": [
+                  {
+                    "id": "C43",
+                    "technology": "css",
+                    "title": "Using CSS scroll-padding-top to un-obscure content anchored to the top of the viewport"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "robust",
+      "num": "4",
+      "handle": "Robust",
+      "title": "Content must be robust enough that it can be interpreted by a wide variety of user agents, including assistive technologies.",
+      "content": "<p>Robust</p>",
+      "versions": [
+        "2.0",
+        "2.1",
+        "2.2"
+      ],
+      "guidelines": [
+        {
+          "id": "compatible",
+          "num": "4.1",
+          "handle": "Compatible",
+          "title": "Maximize compatibility with current and future user agents, including assistive technologies.",
+          "content": "<p>Compatible</p>",
+          "versions": [
+            "2.0",
+            "2.1",
+            "2.2"
+          ],
+          "successcriteria": [
+            {
+              "id": "parsing",
+              "num": "4.1.1",
+              "alt_id": [],
+              "handle": "Parsing",
+              "title": "In content implemented using markup languages, elements have complete start and end tags.",
+              "content": "<p>In content implemented using markup languages, elements have complete start and end tags.</p>",
+              "versions": [
+                "2.0",
+                "2.1"
+              ],
+              "level": "A",
+              "details": [],
+              "techniques": {
+                "sufficient": [
+                  {
+                    "id": "G134",
+                    "technology": "general",
+                    "title": "Validating a web page"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "name-role-value",
+              "num": "4.1.2",
+              "alt_id": [],
+              "handle": "Name, Role, Value",
+              "title": "For all user interface components the name and role can be programmatically determined; states, properties, and values that can be set by the user can be programmatically set; and notification of changes to these items is available to user agents, including assistive technologies.",
+              "content": "<p>For all user interface components the name and role can be programmatically determined; states, properties, and values that can be set by the user can be programmatically set; and notification of changes to these items is available to user agents, including assistive technologies.</p>",
+              "versions": [
+                "2.0",
+                "2.1",
+                "2.2"
+              ],
+              "level": "A",
+              "details": [],
+              "techniques": {
+                "sufficient": [
+                  {
+                    "id": "ARIA14",
+                    "technology": "aria",
+                    "title": "Using aria-label to provide an invisible label where a visible label cannot be used"
+                  },
+                  {
+                    "id": "ARIA16",
+                    "technology": "aria",
+                    "title": "Using aria-labelledby to provide a name for user interface controls"
+                  },
+                  {
+                    "id": "G108",
+                    "technology": "general",
+                    "title": "Using markup features to expose the name and role, allow user-settable properties to be directly set"
+                  },
+                  {
+                    "id": "H91",
+                    "technology": "html",
+                    "title": "Using HTML form controls and links"
+                  }
+                ],
+                "failure": [
+                  {
+                    "id": "F59",
+                    "technology": "failures",
+                    "title": "Failure due to using script to make div or span a user interface control in HTML without providing a role"
+                  },
+                  {
+                    "id": "F111",
+                    "technology": "failures",
+                    "title": "Failure due to a control with visible label text but no accessible name"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "status-messages",
+              "num": "4.1.3",
+              "alt_id": [],
+              "handle": "Status Messages",
+              "title": "In content implemented using markup languages, status messages can be programmatically determined through role or properties such that they can be presented to the user by assistive technologies without receiving focus.",
+              "content": "<p>In content implemented using markup languages, status messages can be programmatically determined through role or properties such that they can be presented to the user by assistive technologies without receiving focus.</p>",
+              "versions": [
+                "2.1",
+                "2.2"
+              ],
+              "level": "AA",
+              "details": [],
+              "techniques": {
+                "sufficient": [
+                  {
+                    "id": "ARIA22",
+                    "technology": "aria",
+                    "title": "Using role=status to present status messages"
+                  },
+                  {
+                    "id": "ARIA19",
+                    "technology": "aria",
+                    "title": "Using ARIA role=alert or Live Regions to identify errors"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "id": "dfn-accessible-name",
+      "name": "accessible name",
+      "definition": "<p>name of a user interface element that can be determined programmatically and presented to the user by assistive technology</p>"
+    },
+    {
+      "id": "dfn-contrast-ratio",
+      "name": "contrast ratio",
+      "definition": "<p>(L1 + 0.05) / (L2 + 0.05), where L1 is the relative luminance of the lighter of the colors and L2 is the relative luminance of the darker of the colors</p>"
+    },
+    {
+      "id": "dfn-keyboard-interface",
+      "name": "keyboard interface",
+      "definition": "<p>interface used by software to obtain keystroke input</p>"
+    },
+    {
+      "id": "dfn-non-text-content",
+      "name": "non-text content",
+      "definition": "<p>any content that is not a sequence of characters that can be programmatically determined</p>"
+    },
+    {
+      "id": "dfn-programmatically-determined",
+      "name": "programmatically determined",
+      "definition": "<p>determined by software from author-supplied data provided in a way that different user agents, including assistive technologies, can extract and present this information to users in different modalities</p>"
+    },
+    {
+      "id": "dfn-status-message",
+      "name": "status message",
+      "definition": "<p>change in content that is not a change of context, and that provides information to the user on the success or results of an action, on the waiting state of an application, on the progress of a process, or on the existence of errors</p>"
+    },
+    {
+      "id": "dfn-large-scale",
+      "name": "large scale",
+      "definition": "<p>with at least 18 point or 14 point bold or font size that would yield equivalent size for Chinese, Japanese and Korean (CJK) fonts</p>"
+    },
+    {
+      "id": "dfn-user-interface-components",
+      "name": "user interface component",
+      "definition": "<p>a part of the content that is perceived by users as a single control for a distinct function</p>"
+    }
+  ]
+}

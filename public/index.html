@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="A developer API that translates plain engineering language, checker rule ids and whole scanner reports into WCAG success criteria, techniques and terminology.">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#16202C">
+<title>WCAG Translator — developer language to WCAG guidance</title>
+<link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="mask-icon" href="/favicon.svg" color="#16202C">
+</head>
+<body class="app">
+
+<a class="skip" href="#input-panel">Skip to the console</a>
+
+<header class="topbar">
+  <a class="wordmark" href="/">
+    <img class="wordmark-mark" src="/favicon.svg" alt="" width="24" height="24" decoding="async">
+    <span>WCAG Translator</span>
+  </a>
+  <p class="tagline">Developer language in. Success criteria out.</p>
+  <nav aria-label="Reference">
+    <a href="/v1/openapi.yaml">OpenAPI</a>
+    <a href="https://github.com/msschermer/wcag-translator">Source</a>
+  </nav>
+</header>
+
+<main class="workspace">
+
+  <!-- ── INPUT ─────────────────────────────────────────────── -->
+  <section class="panel col-input" id="input-panel" aria-labelledby="input-heading" tabindex="-1">
+    <div class="panel-head">
+      <h2 id="input-heading">Input</h2>
+      <span class="panel-note" id="mode-note">plain language</span>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Input mode">
+      <button role="tab" id="tab-text" aria-controls="pane-text" aria-selected="true" tabindex="0">Describe</button>
+      <button role="tab" id="tab-rule" aria-controls="pane-rule" aria-selected="false" tabindex="-1">Rule&nbsp;id</button>
+      <button role="tab" id="tab-report" aria-controls="pane-report" aria-selected="false" tabindex="-1">Report</button>
+      <button role="tab" id="tab-lookup" aria-controls="pane-lookup" aria-selected="false" tabindex="-1">Look&nbsp;up</button>
+    </div>
+
+    <div class="panel-scroll">
+
+      <div role="tabpanel" id="pane-text" aria-labelledby="tab-text" tabindex="0">
+        <div class="field">
+          <span class="fieldbar">
+            <label for="query">What is happening?</label>
+            <span class="tip">
+              <button type="button" class="tip-btn" aria-describedby="tip-text">i<span class="visually-hidden">About this field</span></button>
+              <span role="tooltip" id="tip-text" class="tip-body">Describe the behaviour you can see, and name the element. “The submit button reads as unlabelled” lands better than “fix aria”.</span>
+            </span>
+          </span>
+          <textarea id="query" rows="3" maxlength="500">focus disappears behind the sticky header</textarea>
+        </div>
+        <div class="examples">
+          <button type="button" class="chip-btn" data-example="my button has no accessible name">unnamed button</button>
+          <button type="button" class="chip-btn" data-example="the text contrast is too low">low contrast</button>
+          <button type="button" class="chip-btn" data-example="the keyboard gets trapped in the modal">keyboard trap</button>
+          <button type="button" class="chip-btn" data-example="my form fields do not have labels">unlabelled fields</button>
+          <button type="button" class="chip-btn" data-example="toast notifications are never announced">silent toasts</button>
+        </div>
+      </div>
+
+      <div role="tabpanel" id="pane-rule" aria-labelledby="tab-rule" tabindex="0" hidden>
+        <div class="field">
+          <span class="fieldbar">
+            <label for="rule">Checker rule id</label>
+            <span class="tip">
+              <button type="button" class="tip-btn" aria-describedby="tip-rule">i<span class="visually-hidden">About this field</span></button>
+              <span role="tooltip" id="tip-rule" class="tip-body">axe-core and Lighthouse ids resolve from the mapping table. Pa11y and HTML_CodeSniffer codes are parsed directly, since they carry the criterion inside them. Comma separate up to 100.</span>
+            </span>
+          </span>
+          <input id="rule" type="text" autocomplete="off" spellcheck="false" value="color-contrast, button-name, region">
+        </div>
+        <div class="examples">
+          <button type="button" class="chip-btn" data-rule="color-contrast">color-contrast</button>
+          <button type="button" class="chip-btn" data-rule="image-alt, link-name, label">a small axe run</button>
+          <button type="button" class="chip-btn" data-rule="WCAG2AA.Principle1.Guideline1_4.1_4_3.G18.Fail">a Pa11y code</button>
+          <button type="button" class="chip-btn" data-rule="region">best practice rule</button>
+        </div>
+      </div>
+
+      <div role="tabpanel" id="pane-report" aria-labelledby="tab-report" tabindex="0" hidden>
+        <div class="field">
+          <span class="fieldbar">
+            <label for="report">Scanner report</label>
+            <span class="tip">
+              <button type="button" class="tip-btn" aria-describedby="tip-report">i<span class="visually-hidden">About this field</span></button>
+              <span role="tooltip" id="tip-report" class="tip-body">Paste axe results JSON, a Lighthouse LHR, Pa11y JSON, or a plain array of rule ids. The format is detected from the shape. Element counts and impact carry through to each criterion.</span>
+            </span>
+          </span>
+          <textarea id="report" rows="7" spellcheck="false" placeholder="{ &quot;violations&quot;: [ … ] }"></textarea>
+        </div>
+        <div class="examples">
+          <button type="button" class="chip-btn" id="sample-axe">load a sample axe report</button>
+        </div>
+      </div>
+
+      <div role="tabpanel" id="pane-lookup" aria-labelledby="tab-lookup" tabindex="0" hidden>
+        <div class="field">
+          <span class="fieldbar">
+            <label for="lookup">Criterion, technique or term</label>
+            <span class="tip">
+              <button type="button" class="tip-btn" aria-describedby="tip-lookup">i<span class="visually-hidden">About this field</span></button>
+              <span role="tooltip" id="tip-lookup" class="tip-body">All three namespaces are searched at once, so 1.4.3, contrast-minimum, H37 and “accessible name” all work without picking a type first.</span>
+            </span>
+          </span>
+          <input id="lookup" type="text" autocomplete="off" spellcheck="false" value="1.4.3">
+        </div>
+        <div class="examples">
+          <button type="button" class="chip-btn" data-lookup="4.1.2">4.1.2</button>
+          <button type="button" class="chip-btn" data-lookup="H37">H37</button>
+          <button type="button" class="chip-btn" data-lookup="accessible name">accessible name</button>
+          <button type="button" class="chip-btn" data-lookup="focus-visible">focus-visible</button>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="version">Version</label>
+          <select id="version">
+            <option value="2.2" selected>WCAG 2.2</option>
+            <option value="2.1">WCAG 2.1</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="level">Level</label>
+          <select id="level">
+            <option value="">Any</option>
+            <option value="A">A</option>
+            <option value="AA">AA</option>
+            <option value="AAA">AAA</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-foot">
+      <button type="button" class="action" id="run">Run</button>
+      <p class="foot-note">Matching runs on this server against the indexed W3C data.</p>
+    </div>
+  </section>
+
+  <!-- ── RESULTS ───────────────────────────────────────────── -->
+  <section class="panel col-results" aria-labelledby="output-heading">
+    <div class="panel-head">
+      <h2 id="output-heading">Response</h2>
+      <span class="statuspill" id="status">idle</span>
+    </div>
+    <div class="panel-scroll" id="results-scroll">
+      <p class="summary" id="summary">Send a description, a checker rule id or a whole scan report. You get back the success criteria it maps to, why each one matched, and where the wording came from.</p>
+      <output id="results" class="results" aria-live="polite"></output>
+      <div id="weak" class="weak" hidden>
+        <button type="button" id="weak-toggle" class="weak-toggle" aria-expanded="false" aria-controls="weak-list">
+          <span id="weak-label">weaker matches</span>
+        </button>
+        <ul id="weak-list" class="weak-list" hidden></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CONTEXT ───────────────────────────────────────────── -->
+  <aside class="panel col-context" aria-labelledby="context-heading">
+    <div class="panel-head">
+      <h2 id="context-heading">Context</h2>
+    </div>
+
+    <div class="tabs tabs-sm" role="tablist" aria-label="Context">
+      <button role="tab" id="ctx-api" aria-controls="ctx-pane-api" aria-selected="true" tabindex="0">API</button>
+      <button role="tab" id="ctx-coverage" aria-controls="ctx-pane-coverage" aria-selected="false" tabindex="-1">Coverage</button>
+      <button role="tab" id="ctx-sources" aria-controls="ctx-pane-sources" aria-selected="false" tabindex="-1">Sources</button>
+    </div>
+
+    <div class="panel-scroll">
+
+      <div role="tabpanel" id="ctx-pane-api" aria-labelledby="ctx-api" tabindex="0">
+
+        <div class="wire">
+          <div class="wire-head">
+            <code id="wire-call">POST /v1/translate</code>
+            <button type="button" class="linkbtn" id="wire-copy" disabled>copy</button>
+          </div>
+          <pre class="wire-body" id="wire-body" tabindex="0" role="region" aria-label="Live API response"><code id="wire-json" class="wire-empty">Run something on the left and the response that produced it appears here.</code></pre>
+          <p class="wire-note" id="wire-note">Every panel on this screen is rendered from this payload.</p>
+        </div>
+
+        <h3 class="ctx-sub">Endpoints</h3>
+        <ul class="endpoints">
+          <li><code>POST /v1/translate</code><span>Language to criteria, with match basis and confidence.</span></li>
+          <li><code>POST /v1/translate/rule</code><span>Checker rule ids. Same result shape. Up to 100 per call.</span></li>
+          <li><code>POST /v1/report</code><span>A whole axe, Lighthouse or Pa11y report, rolled up by criterion.</span></li>
+          <li><code>GET /v1/coverage</code><span>Which criteria automation reaches, and which need a person.</span></li>
+          <li><code>GET /v1/search?q=</code><span>Ranked search across criteria, techniques and glossary.</span></li>
+          <li><code>GET /v1/criteria/:id</code><span>One criterion, plus <code>/coverage</code> and <code>/related</code>.</span></li>
+          <li><code>GET /v1/techniques/:id</code><span>One technique, and the criteria it supports.</span></li>
+          <li><code>GET /v1/glossary/:term</code><span>A WCAG glossary definition.</span></li>
+          <li><code>GET /v1/rules</code><span>Every checker rule this build knows, filterable by criterion.</span></li>
+          <li><code>GET /v1/health</code><span>Liveness, plus the age of the indexed W3C data.</span></li>
+        </ul>
+      </div>
+
+      <div role="tabpanel" id="ctx-pane-coverage" aria-labelledby="ctx-coverage" tabindex="0" hidden>
+        <p class="ctx-lede">How much of WCAG automated tooling reaches on its own.</p>
+        <div class="meter" id="coverage-meter" role="img" aria-label="Coverage breakdown loading">
+          <span class="meter-seg seg-automated" style="width:0%"></span>
+          <span class="meter-seg seg-assisted" style="width:0%"></span>
+          <span class="meter-seg seg-manual" style="width:0%"></span>
+        </div>
+        <ul class="legend">
+          <li><span class="key key-automated"></span><b id="cov-automated">—</b>
+            <span>automated</span>
+            <span class="tip">
+              <button type="button" class="tip-btn" aria-describedby="tip-auto">i<span class="visually-hidden">What automated means</span></button>
+              <span role="tooltip" id="tip-auto" class="tip-body">An engine publishes a rule claiming this criterion, so a scanner can find some of its failures.</span>
+            </span>
+          </li>
+          <li><span class="key key-assisted"></span><b id="cov-assisted">—</b>
+            <span>assisted</span>
+            <span class="tip">
+              <button type="button" class="tip-btn" aria-describedby="tip-assist">i<span class="visually-hidden">What assisted means</span></button>
+              <span role="tooltip" id="tip-assist" class="tip-body">Reached only by a manual prompt, or by a mapping this service supplies. Local mappings never count as engine coverage.</span>
+            </span>
+          </li>
+          <li><span class="key key-manual"></span><b id="cov-manual">—</b>
+            <span>human review</span>
+            <span class="tip">
+              <button type="button" class="tip-btn" aria-describedby="tip-manual">i<span class="visually-hidden">What human review means</span></button>
+              <span role="tooltip" id="tip-manual" class="tip-body">A person decides this one. Most of WCAG lives here, which is the number worth knowing before trusting a green CI badge.</span>
+            </span>
+          </li>
+        </ul>
+        <p class="ctx-note" id="coverage-note">Loading the coverage breakdown.</p>
+      </div>
+
+      <div role="tabpanel" id="ctx-pane-sources" aria-labelledby="ctx-sources" tabindex="0" hidden>
+        <p class="ctx-lede">W3C allow reuse where their content stays intact and additions stay distinguishable, so provenance rides along in the response shape.</p>
+        <dl class="prov">
+          <dt><span class="src src-w3c">w3c</span></dt>
+          <dd>Principles, guidelines, success criteria, requirement HTML, glossary definitions and technique associations. Reproduced intact from the published <a href="https://www.w3.org/WAI/WCAG22/wcag.json">W3C JSON</a>.</dd>
+          <dt><span class="src src-axe">axe-core</span></dt>
+          <dd>Checker rule ids, help text and the WCAG tags behind every rule mapping. Generated from axe-core at build time. MPL-2.0.</dd>
+          <dt><span class="src src-ours">added here</span></dt>
+          <dd>The developer phrase dictionary, signal words, relevance scores, confidence labels, explanations and coverage analysis. Tagged <code>source</code> wherever it appears.</dd>
+        </dl>
+      </div>
+
+    </div>
+  </aside>
+
+</main>
+
+<footer class="statusbar">
+  <ul class="counts">
+    <li><b id="stat-criteria">—</b> criteria</li>
+    <li><b id="stat-techniques">—</b> techniques</li>
+    <li><b id="stat-glossary">—</b> glossary</li>
+    <li><b id="stat-phrases">—</b> phrases</li>
+    <li><b id="stat-rules">—</b> rules</li>
+  </ul>
+  <p class="build" id="stat-build">loading build</p>
+  <p class="credit">
+    WCAG content <a href="https://www.w3.org/WAI/standards-guidelines/wcag/">W3C WAI</a>, intact under the
+    <a href="https://www.w3.org/copyright/document-license/">W3C Document License</a>. Rule data <a href="https://github.com/dequelabs/axe-core">axe-core</a>.
+  </p>
+</footer>
+
+<script src="/app.js"></script>
+</body>
+</html>

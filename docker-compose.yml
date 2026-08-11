@@ -1,0 +1,16 @@
+# Local build and run. Production uses the GHCR image from the portfolio-infra
+# compose file instead of building from source.
+services:
+  wcag-translator:
+    build: .
+    container_name: wcag-translator
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      CORS_ORIGIN: "*"
+      TRUST_PROXY: "1"
+      PUBLIC_RATE_LIMIT: "60"
+      API_RATE_LIMIT: "300"
+    ports:
+      - "3000:3000"

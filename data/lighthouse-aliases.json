@@ -1,0 +1,18 @@
+{
+  "version": "1.0.0",
+  "source": "wcag-translator",
+  "description": "Lighthouse accessibility audit ids that do NOT share a name with an axe-core rule. Most Lighthouse a11y audits wrap axe and resolve by rule id directly; these are the manual and Lighthouse-specific ones. Maintained here, not derived from any engine.",
+  "aliases": [
+    { "id": "logical-tab-order", "criteria": ["2.4.3"], "note": "Manual audit. Focus order." },
+    { "id": "focusable-controls", "criteria": ["2.1.1"], "note": "Manual audit. Keyboard operability." },
+    { "id": "interactive-element-affordance", "criteria": ["1.3.1", "4.1.2"], "note": "Manual audit." },
+    { "id": "managed-focus", "criteria": ["2.4.3"], "note": "Manual audit. Focus management after route change." },
+    { "id": "focus-traps", "criteria": ["2.1.2"], "note": "Manual audit." },
+    { "id": "custom-controls-labels", "criteria": ["4.1.2"], "note": "Manual audit." },
+    { "id": "custom-controls-roles", "criteria": ["4.1.2"], "note": "Manual audit." },
+    { "id": "visual-order-follows-dom", "criteria": ["1.3.2"], "note": "Manual audit. Meaningful sequence." },
+    { "id": "offscreen-content-hidden", "criteria": ["1.3.2", "2.4.3"], "note": "Manual audit." },
+    { "id": "use-landmarks", "criteria": ["1.3.1", "2.4.1"], "note": "Manual audit." },
+    { "id": "empty-heading", "criteria": ["1.3.1", "2.4.6"], "note": "Lighthouse-only heading check." }
+  ]
+}

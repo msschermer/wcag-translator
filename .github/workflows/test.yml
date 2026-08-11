@@ -1,0 +1,56 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # Runs against the committed fixture, so CI does not depend on w3.org
+      # being reachable. That was a real failure mode in the previous build.
+      - name: Test
+        run: npm test
+
+  data-contract:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # Separate, non-blocking job. Catches the day W3C change the JSON shape,
+      # without failing every unrelated pull request while they do it.
+      - name: Verify the live W3C data still matches the expected contract
+        run: npm run sync:wcag && npm run build:data
+
+      # A W3C or axe change that removes a criterion the vocabulary or the
+      # Lighthouse aliases reference should be visible here, not in production.
+      - name: Verify coverage analysis holds against the real data
+        run: |
+          npm run build:fonts
+          node -e "
+            process.env.WCAG_DATA_DIR='data/generated';
+            const { coverageSummary } = await import('./src/services/coverage.js');
+            const s = coverageSummary();
+            console.log(s);
+            if (s.total < 50) throw new Error('criteria count collapsed');
+            if (s.automated < 5) throw new Error('no automated coverage detected');
+          " --input-type=module

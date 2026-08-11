@@ -1,0 +1,844 @@
+openapi: 3.1.0
+
+info:
+  title: WCAG Translator API
+  version: 3.0.0
+  summary: Translates plain engineering language into WCAG success criteria, techniques and terminology.
+  description: |
+    WCAG Translator maps the language developers actually use ("my button has no
+    accessible name") onto the WCAG success criteria, techniques and glossary
+    terms that language refers to.
+
+    Everything runs against the indexed W3C data on this server. The API points
+    you at the criterion to read; looking at the page and deciding whether it
+    meets that criterion stays with you. `/v1/coverage` reports how much of WCAG
+    automated tooling reaches at all.
+
+    Success criteria, guidelines, principles, glossary terms and technique
+    associations come from the W3C machine-readable WCAG JSON and are reproduced
+    unchanged. Developer vocabulary phrases, relevance scores, confidence labels
+    and match explanations are added by this service and are tagged
+    `source: "wcag-translator"` wherever they appear.
+  license:
+    name: MIT (application code)
+    identifier: MIT
+  contact:
+    name: WCAG Translator
+    url: https://github.com/msschermer/wcag-translator
+
+servers:
+  - url: https://wcag-translator.msschermer.us
+    description: Production
+  - url: http://localhost:3000
+    description: Local
+
+tags:
+  - name: Translation
+    description: Developer language to WCAG concepts.
+  - name: Search
+    description: Ranked full text search across criteria, techniques and glossary.
+  - name: Checker rules
+    description: |
+      Automated checker rule ids to WCAG criteria. axe-core mappings are
+      generated from axe-core's own WCAG tags; Pa11y / HTML_CodeSniffer codes are
+      parsed at request time; a small set of Lighthouse-only audit ids is
+      maintained by this service and tagged as such.
+  - name: WCAG
+    description: Normalised W3C reference data.
+  - name: Reports
+    description: Whole scanner reports, rolled up by success criterion.
+  - name: Coverage
+    description: |
+      Which success criteria automated tooling can reach at all. Derived by
+      intersecting the indexed WCAG criteria with the WCAG tags checkers publish
+      for their own rules.
+  - name: Service
+    description: Health, metadata and statistics.
+
+security: []
+
+components:
+  securitySchemes:
+    ApiKeyHeader:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: Optional. Raises the rate limit. No endpoint requires a key.
+    BearerKey:
+      type: http
+      scheme: bearer
+
+  parameters:
+    Version:
+      name: version
+      in: query
+      description: WCAG version a criterion must belong to.
+      schema: { type: string, enum: ["2.2", "2.1", "2.0"], default: "2.2" }
+    Level:
+      name: level
+      in: query
+      description: Conformance level filter.
+      schema: { type: string, enum: [A, AA, AAA] }
+    Limit:
+      name: limit
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+    Offset:
+      name: offset
+      in: query
+      schema: { type: integer, minimum: 0, default: 0 }
+
+  headers:
+    RateLimitLimit:
+      description: Requests permitted in the current window.
+      schema: { type: integer }
+    RateLimitRemaining:
+      description: Requests left in the current window.
+      schema: { type: integer }
+    RateLimitReset:
+      description: Unix time at which the window resets.
+      schema: { type: integer }
+    RequestId:
+      description: Echoed from X-Request-ID, or generated.
+      schema: { type: string }
+
+  schemas:
+    Attribution:
+      type: object
+      description: W3C attribution, present on every response carrying W3C material.
+      properties:
+        source: { type: string, const: w3c }
+        statement: { type: string }
+        documents:
+          type: array
+          items:
+            type: object
+            properties:
+              title: { type: string }
+              url: { type: string, format: uri }
+        serialization: { type: string, format: uri }
+        license: { type: string, format: uri }
+        addedByThisService: { type: string }
+
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [status, message]
+          properties:
+            status: { type: integer }
+            message: { type: string }
+            details: { type: object, additionalProperties: true }
+
+    TechniqueRef:
+      type: object
+      description: W3C technique association.
+      properties:
+        id: { type: string, examples: [H37] }
+        title: { type: string }
+        technology:
+          type: [string, "null"]
+          examples: [html, aria, css, general, failures, pdf, smil, text, client-side-script, server-side-script]
+        category: { type: string, enum: [sufficient, advisory, failure] }
+
+    Technique:
+      type: object
+      properties:
+        id: { type: string }
+        title: { type: string }
+        technology: { type: [string, "null"] }
+        categories: { type: array, items: { type: string } }
+        criteria: { type: array, items: { type: string } }
+        url: { type: [string, "null"], format: uri }
+        source: { type: string, const: w3c }
+
+    CriterionSummary:
+      type: object
+      properties:
+        id: { type: string, examples: ["1.4.3"] }
+        slug: { type: string, examples: [contrast-minimum] }
+        handle: { type: string, examples: [Contrast (Minimum)] }
+        level: { type: string, enum: [A, AA, AAA] }
+        versions: { type: array, items: { type: string } }
+        guideline: { type: object, additionalProperties: true }
+        principle: { type: object, additionalProperties: true }
+        links: { type: object, additionalProperties: true }
+
+    Criterion:
+      allOf:
+        - $ref: '#/components/schemas/CriterionSummary'
+        - type: object
+          properties:
+            num: { type: string }
+            requirement:
+              type: string
+              description: The full W3C requirement sentence.
+            content:
+              type: string
+              description: Original W3C HTML, unmodified.
+            details: { type: array, items: { type: object, additionalProperties: true } }
+            techniques: { type: array, items: { $ref: '#/components/schemas/TechniqueRef' } }
+            source: { type: string, const: w3c }
+            derived:
+              type: object
+              description: Plain text fields generated by this service, not W3C content.
+              properties:
+                source: { type: string, const: wcag-translator }
+                text: { type: string }
+                detailsText: { type: string }
+
+    GlossaryTerm:
+      type: object
+      properties:
+        id: { type: string, examples: [dfn-accessible-name] }
+        name: { type: string, examples: [accessible name] }
+        definition: { type: string, description: Original W3C HTML, unmodified. }
+        source: { type: string, const: w3c }
+        derived: { type: object, additionalProperties: true }
+
+    TranslationMatch:
+      type: object
+      description: Added by this service. Not W3C material.
+      properties:
+        source: { type: string, const: wcag-translator }
+        confidence: { type: string, enum: [high, medium, low] }
+        basis:
+          type: string
+          enum: [phrase, signals, fulltext, rule-mapping]
+          description: |
+            `phrase` - the query contained a known developer phrase.
+            `signals` - the query carried the required signal words for a phrase.
+            `fulltext` - ranked text relevance only. Treat as a lead.
+            `rule-mapping` - resolved from an automated checker rule id.
+        developerPhrase: { type: [string, "null"] }
+        signals: { type: array, items: { type: string } }
+        relevance: { type: number, minimum: 0, maximum: 1 }
+        explanation: { type: string }
+
+    TranslationResult:
+      type: object
+      properties:
+        criterion: { $ref: '#/components/schemas/CriterionSummary' }
+        match: { $ref: '#/components/schemas/TranslationMatch' }
+        techniques: { type: array, items: { $ref: '#/components/schemas/TechniqueRef' } }
+        links: { type: object, additionalProperties: true }
+
+    TranslateResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            query: { type: string }
+            normalizedQuery: { type: string }
+            tokens: { type: array, items: { type: string } }
+            version: { type: string }
+            level: { type: string }
+            translation:
+              type: object
+              properties:
+                source: { type: string, const: wcag-translator }
+                summary: { type: string }
+                results: { type: array, items: { $ref: '#/components/schemas/TranslationResult' } }
+            relatedTechniques: { type: array, items: { $ref: '#/components/schemas/Technique' } }
+            vocabularyMatches: { type: array, items: { type: object, additionalProperties: true } }
+            caveat: { type: string }
+        attribution: { $ref: '#/components/schemas/Attribution' }
+
+    CheckerRule:
+      type: object
+      properties:
+        id: { type: string, examples: [color-contrast] }
+        engine: { type: string, enum: [axe, lighthouse, pa11y] }
+        source:
+          type: string
+          description: Where the rule definition came from.
+          examples: [axe-core, wcag-translator]
+        help: { type: string }
+        description: { type: string }
+        helpUrl: { type: [string, "null"], format: uri }
+        criteria: { type: array, items: { type: string } }
+        criteriaSource:
+          type: string
+          enum: [axe-core, wcag-translator]
+          description: |
+            Whether the WCAG mapping is published by the engine or supplied by
+            this service. Never conflated.
+        criteriaNote: { type: string }
+        wcagMapped:
+          type: boolean
+          description: False for best-practice and experimental checks.
+        conformanceTag: { type: [string, "null"], examples: [wcag2aa] }
+        tags: { type: array, items: { type: string } }
+
+    RuleReport:
+      type: object
+      properties:
+        rule: { type: string }
+        engine: { type: string }
+        resolved: { type: boolean }
+        resolution: { type: string, enum: [mapped, parsed] }
+        wcagMapped: { type: boolean }
+        mappingSource: { type: string }
+        help: { type: string }
+        helpUrl: { type: [string, "null"] }
+        criteria: { type: array, items: { type: string } }
+        excluded:
+          type: array
+          description: Criteria the rule maps to that a filter removed, with the reason.
+          items:
+            type: object
+            properties:
+              criterion: { type: string }
+              reason: { type: string }
+        note: { type: string }
+        suggestions:
+          type: array
+          description: Present when the id did not resolve.
+          items: { type: string }
+
+    ReportResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            report:
+              type: object
+              properties:
+                source: { type: string, const: wcag-translator }
+                format: { type: string, enum: [axe, lighthouse, pa11y, rule-ids] }
+                url: { type: [string, "null"] }
+                findings: { type: integer, description: Distinct failing checks. }
+                occurrences: { type: integer, description: Elements affected across all checks. }
+                needsReview:
+                  type: array
+                  description: Checks the scanner could not decide. Not counted as failures.
+                  items: { type: string }
+            translation:
+              type: object
+              properties:
+                source: { type: string, const: wcag-translator }
+                summary: { type: string }
+                results:
+                  type: array
+                  description: |
+                    Same shape as /v1/translate results, with `match.occurrences`
+                    and `match.impact` added. Ordered by impact, then occurrences.
+                  items: { $ref: '#/components/schemas/TranslationResult' }
+            rules: { type: array, items: { $ref: '#/components/schemas/RuleReport' } }
+            caveat: { type: string }
+        attribution: { $ref: '#/components/schemas/Attribution' }
+
+    RuleTranslateResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            version: { type: string }
+            level: { type: string }
+            input:
+              type: object
+              properties:
+                rules: { type: array, items: { type: string } }
+                count: { type: integer }
+            translation:
+              type: object
+              properties:
+                source: { type: string, const: wcag-translator }
+                summary: { type: string }
+                results:
+                  type: array
+                  description: Deduplicated criteria, same shape as /v1/translate results.
+                  items: { $ref: '#/components/schemas/TranslationResult' }
+            rules: { type: array, items: { $ref: '#/components/schemas/RuleReport' } }
+            caveat: { type: string }
+        attribution: { $ref: '#/components/schemas/Attribution' }
+
+    TranslateRequest:
+      type: object
+      required: [query]
+      properties:
+        query:
+          type: string
+          maxLength: 500
+          examples: ["focus disappears behind the sticky header"]
+        version: { type: string, enum: ["2.2", "2.1", "2.0"], default: "2.2" }
+        level: { type: string, enum: [A, AA, AAA] }
+        maxResults: { type: integer, minimum: 1, maximum: 10, default: 5 }
+
+  responses:
+    BadRequest:
+      description: The request was malformed.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: No such resource.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    TooManyRequests:
+      description: Rate limit exceeded.
+      headers:
+        Retry-After:
+          description: Seconds until the window resets.
+          schema: { type: integer }
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+
+paths:
+  /v1/translate:
+    get:
+      tags: [Translation]
+      summary: Translate a developer description into WCAG concepts
+      operationId: translateGet
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema: { type: string, maxLength: 500 }
+          example: my button has no accessible name
+        - $ref: '#/components/parameters/Version'
+        - $ref: '#/components/parameters/Level'
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 10, default: 5 }
+      responses:
+        "200":
+          description: Ranked WCAG mappings.
+          headers:
+            X-RateLimit-Limit: { $ref: '#/components/headers/RateLimitLimit' }
+            X-RateLimit-Remaining: { $ref: '#/components/headers/RateLimitRemaining' }
+            X-Request-ID: { $ref: '#/components/headers/RequestId' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TranslateResponse' }
+        "400": { $ref: '#/components/responses/BadRequest' }
+        "429": { $ref: '#/components/responses/TooManyRequests' }
+    post:
+      tags: [Translation]
+      summary: Translate a developer description into WCAG concepts
+      operationId: translatePost
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TranslateRequest' }
+      responses:
+        "200":
+          description: Ranked WCAG mappings.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TranslateResponse' }
+        "400": { $ref: '#/components/responses/BadRequest' }
+        "413":
+          description: Request body too large.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        "429": { $ref: '#/components/responses/TooManyRequests' }
+
+  /v1/translate/rule:
+    post:
+      tags: [Checker rules]
+      summary: Translate one or more checker rule ids into WCAG criteria
+      description: |
+        Returns the same result shape as `/v1/translate`, so a client can pipe
+        either a sentence or a checker rule id into the same renderer.
+
+        Rules that resolve but carry no WCAG mapping (best-practice and
+        experimental checks) come back with `wcagMapped: false` and a note rather
+        than as an error. Criteria removed by a `level` or `version` filter are
+        reported in `excluded` with the reason.
+      operationId: translateRule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rule:
+                  type: string
+                  description: A single rule id. Mutually exclusive with `rules`.
+                  examples: [color-contrast]
+                rules:
+                  type: array
+                  maxItems: 100
+                  items: { type: string, maxLength: 200 }
+                  examples: [["color-contrast", "button-name", "WCAG2AA.Principle1.Guideline1_4.1_4_3.G18.Fail"]]
+                version: { type: string, enum: ["2.2", "2.1", "2.0"], default: "2.2" }
+                level: { type: string, enum: [A, AA, AAA] }
+      responses:
+        "200":
+          description: Criteria rollup plus a per rule breakdown.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RuleTranslateResponse' }
+        "400": { $ref: '#/components/responses/BadRequest' }
+        "429": { $ref: '#/components/responses/TooManyRequests' }
+    get:
+      tags: [Checker rules]
+      summary: Translate checker rule ids (comma separated)
+      operationId: translateRuleGet
+      parameters:
+        - name: rule
+          in: query
+          required: true
+          schema: { type: string }
+          example: image-alt,color-contrast
+        - $ref: '#/components/parameters/Version'
+        - $ref: '#/components/parameters/Level'
+      responses:
+        "200":
+          description: Criteria rollup plus a per rule breakdown.
+        "400": { $ref: '#/components/responses/BadRequest' }
+
+  /v1/report:
+    post:
+      tags: [Reports]
+      summary: Translate a whole scanner report
+      description: |
+        Accepts what a CI step actually has on hand rather than rule ids picked
+        out of it by hand. The format is detected from the shape of the body.
+
+        Node counts and impact are carried through onto each criterion, so the
+        rollup is ordered by how much of the page is affected rather than by
+        criterion number. axe's `incomplete` entries are reported separately
+        under `report.needsReview`, because "needs review" is not "failed".
+
+        The body may be the raw scanner output, or a wrapper carrying it
+        alongside `version` and `level` filters.
+      operationId: ingestReport
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  description: A wrapper carrying the report plus filters.
+                  required: [report]
+                  properties:
+                    report: { description: Raw scanner output. }
+                    version: { type: string, enum: ["2.2", "2.1", "2.0"], default: "2.2" }
+                    level: { type: string, enum: [A, AA, AAA] }
+                - type: object
+                  description: An axe-core results object or a Lighthouse LHR, posted directly.
+                - type: array
+                  description: A Pa11y issue array, or a plain array of rule id strings.
+                  items: {}
+      responses:
+        "200":
+          description: Criteria rollup, weighted by occurrences and impact.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ReportResponse' }
+        "400":
+          description: |
+            The report shape was not recognised. The error details list every
+            supported format.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        "429": { $ref: '#/components/responses/TooManyRequests' }
+
+  /v1/coverage:
+    get:
+      tags: [Coverage]
+      summary: How much of WCAG automated tooling can reach
+      description: |
+        Classifies every indexed criterion as `automated` (an engine publishes a
+        rule claiming it), `assisted` (only a manual prompt or a mapping this
+        service supplies reaches it), or `manual-only` (nothing reaches it).
+
+        Mappings this service adds never upgrade a criterion to `automated`.
+      operationId: coverage
+      parameters:
+        - name: coverage
+          in: query
+          schema: { type: string, enum: [automated, assisted, manual-only] }
+        - $ref: '#/components/parameters/Level'
+      responses:
+        "200":
+          description: Summary plus a per criterion breakdown.
+
+  /v1/criteria/{id}/coverage:
+    get:
+      tags: [Coverage]
+      summary: Automated coverage for one criterion
+      operationId: criterionCoverage
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+          example: "1.4.3"
+      responses:
+        "200": { description: Coverage classification and the rules that reach it. }
+        "404": { $ref: '#/components/responses/NotFound' }
+
+  /v1/criteria/{id}/related:
+    get:
+      tags: [Coverage]
+      summary: Criteria that share techniques with this one
+      description: |
+        Ranked by how many W3C techniques the two criteria have in common.
+        Criteria satisfied by the same techniques tend to fail together.
+      operationId: criterionRelated
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+          example: "4.1.2"
+      responses:
+        "200": { description: Related criteria, most shared techniques first. }
+        "404": { $ref: '#/components/responses/NotFound' }
+
+  /v1/rules:
+    get:
+      tags: [Checker rules]
+      summary: List known checker rules
+      operationId: listRules
+      parameters:
+        - name: engine
+          in: query
+          schema: { type: string, enum: [axe, lighthouse] }
+        - name: criterion
+          in: query
+          description: Only rules that map to this criterion number.
+          schema: { type: string }
+          example: "4.1.2"
+        - name: mapped
+          in: query
+          description: Filter to rules that do or do not carry a WCAG mapping.
+          schema: { type: string, enum: ["true", "false"] }
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        "200":
+          description: |
+            A page of rules. `meta.engines` records each engine's name, version,
+            source and licence.
+
+  /v1/rules/{id}:
+    get:
+      tags: [Checker rules]
+      summary: Get one checker rule
+      operationId: getRule
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+          example: color-contrast
+      responses:
+        "200":
+          description: The rule.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: '#/components/schemas/CheckerRule' }
+        "404":
+          description: |
+            Unknown rule id. The error details carry up to three suggestions
+            based on prefix, substring and edit distance.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /v1/search:
+    get:
+      tags: [Search]
+      summary: Ranked search across criteria, techniques and glossary
+      operationId: search
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema: { type: string, maxLength: 500 }
+          example: contrast ratio
+        - $ref: '#/components/parameters/Version'
+        - $ref: '#/components/parameters/Level'
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 25, default: 10 }
+      responses:
+        "200":
+          description: Ranked results grouped by type.
+        "400": { $ref: '#/components/responses/BadRequest' }
+        "429": { $ref: '#/components/responses/TooManyRequests' }
+
+  /v1/criteria:
+    get:
+      tags: [WCAG]
+      summary: List success criteria
+      operationId: listCriteria
+      parameters:
+        - $ref: '#/components/parameters/Level'
+        - $ref: '#/components/parameters/Version'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        "200":
+          description: A page of success criteria.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { type: array, items: { $ref: '#/components/schemas/CriterionSummary' } }
+                  meta: { type: object, properties: { total: { type: integer }, limit: { type: integer }, offset: { type: integer } } }
+                  attribution: { $ref: '#/components/schemas/Attribution' }
+
+  /v1/criteria/{id}:
+    get:
+      tags: [WCAG]
+      summary: Get one success criterion
+      operationId: getCriterion
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Criterion number or slug. "1.4.3", "SC 1.4.3" and "contrast-minimum" all resolve.
+          schema: { type: string }
+          example: "1.4.3"
+      responses:
+        "200":
+          description: The success criterion.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: '#/components/schemas/Criterion' }
+                  attribution: { $ref: '#/components/schemas/Attribution' }
+        "404": { $ref: '#/components/responses/NotFound' }
+
+  /v1/techniques:
+    get:
+      tags: [WCAG]
+      summary: List techniques
+      operationId: listTechniques
+      parameters:
+        - name: technology
+          in: query
+          schema: { type: string }
+          example: aria
+        - name: category
+          in: query
+          schema: { type: string, enum: [sufficient, advisory, failure] }
+        - name: criterion
+          in: query
+          description: Only techniques associated with this criterion number.
+          schema: { type: string }
+          example: "4.1.2"
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        "200":
+          description: A page of techniques.
+
+  /v1/techniques/{id}:
+    get:
+      tags: [WCAG]
+      summary: Get one technique
+      operationId: getTechnique
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+          example: H37
+      responses:
+        "200":
+          description: The technique.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: '#/components/schemas/Technique' }
+        "404": { $ref: '#/components/responses/NotFound' }
+
+  /v1/glossary:
+    get:
+      tags: [WCAG]
+      summary: List glossary terms
+      operationId: listGlossary
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        "200":
+          description: A page of glossary terms.
+
+  /v1/glossary/{term}:
+    get:
+      tags: [WCAG]
+      summary: Get one glossary term
+      operationId: getGlossaryTerm
+      parameters:
+        - name: term
+          in: path
+          required: true
+          description: Term name, hyphenated name, or W3C dfn id.
+          schema: { type: string }
+          example: accessible name
+      responses:
+        "200":
+          description: The glossary term.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: '#/components/schemas/GlossaryTerm' }
+        "404": { $ref: '#/components/responses/NotFound' }
+
+  /v1/health:
+    get:
+      tags: [Service]
+      summary: Liveness and dataset freshness
+      operationId: health
+      responses:
+        "200":
+          description: |
+            Healthy. `dataset.stale` turns true when the indexed W3C data is more
+            than 45 days old, since W3C republish monthly.
+
+  /v1/meta:
+    get:
+      tags: [Service]
+      summary: API metadata, limits and endpoint index
+      operationId: meta
+      responses:
+        "200": { description: Service metadata. }
+
+  /v1/stats:
+    get:
+      tags: [Service]
+      summary: Dataset statistics
+      operationId: stats
+      responses:
+        "200": { description: Counts by level, version and technology. }
+
+  /v1/openapi.yaml:
+    get:
+      tags: [Service]
+      summary: This document
+      operationId: openapi
+      responses:
+        "200":
+          description: The OpenAPI document.
+          content:
+            application/yaml:
+              schema: { type: string }

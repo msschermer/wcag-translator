@@ -1,0 +1,33 @@
+{
+  "name": "wcag-translator",
+  "version": "3.0.0",
+  "description": "Developer facing API that translates plain engineering language into WCAG success criteria, techniques and terminology.",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "sync:wcag": "node scripts/sync-wcag.js",
+    "build:data": "node scripts/build-data.js && node scripts/build-rules.js",
+    "build:fixture": "node scripts/build-data.js --source data/fixtures --out data/fixtures/generated --allow-partial && node scripts/build-rules.js --out data/fixtures/generated",
+    "prepare:data": "npm run sync:wcag && npm run build:data && npm run build:fonts",
+    "pretest": "npm run build:fixture && npm run build:fonts",
+    "test": "WCAG_DATA_DIR=data/fixtures/generated node --test 'test/*.test.js'",
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "build:rules": "node scripts/build-rules.js",
+    "build:fonts": "node scripts/build-fonts.js"
+  },
+  "dependencies": {
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0"
+  },
+  "devDependencies": {
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "@fontsource/ibm-plex-sans": "^5.3.0",
+    "axe-core": "^4.13.0"
+  }
+}
