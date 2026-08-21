@@ -1,19 +1,3 @@
-/* WCAG Translator
-   Blueprint identity shared with the rest of the portfolio: IBM Plex, drafting
-   grid, square corners, ink-tabbed panels, mono micro-labels.
-
-   Laid out as an application shell rather than a document. The viewport is the
-   frame: topbar, three working columns, status bar. Each column scrolls inside
-   itself, so the page itself never does.
-
-   IBM Plex is self hosted from /fonts (scripts/build-fonts.js). The API runs
-   under `style-src 'self'` and `font-src 'self'`, so a remote font stylesheet
-   would be blocked and the identity would fall back to system faces.
-
-   Provenance is carried in colour: blue is W3C material, green is material this
-   service adds, violet is third party engine metadata. Every foreground and
-   background pair below sits at or above 4.5:1. */
-
 :root {
   --paper:      #EDF1F6;
   --card:       #FBFCFD;
@@ -44,7 +28,8 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html, body { height: 100%; max-width: 100%; overflow-x: hidden; }
+html { height: 100%; overflow-x: hidden; }
+body { height: 100%; max-width: 100%; }
 
 body.app {
   height: 100dvh;
@@ -109,14 +94,23 @@ a:hover { color: var(--ink); }
   color: var(--card); text-decoration: none;
   font-family: var(--mono); font-size: 15px; font-weight: 600;
 }
-.wordmark:hover, .wordmark:focus-visible { color: var(--card); }
-.wordmark:hover .wordmark-mark { border-color: var(--card); }
+/* The generic `a:hover` repaints links to --ink, which is the topbar's own
+   background. Scoped to .topbar and naming the child span as well, so nothing
+   in the wordmark can inherit the dark value. */
+.topbar .wordmark:hover,
+.topbar .wordmark:focus-visible,
+.topbar .wordmark:hover span,
+.topbar .wordmark:focus-visible span { color: var(--card); }
+
 .wordmark-mark {
   width: 24px; height: 24px; flex: 0 0 auto; display: block;
-  /* The mark's own ground is the same ink as the topbar, so a hairline keeps
-     the tile legible instead of letting it dissolve into the bar. */
-  border: 1px solid #3C4C5E;
+  /* Inline SVG rather than an <img> so the brackets follow currentColor and
+     stay legible on the dark bar. favicon.svg keeps its opaque ground for the
+     browser tab; that ground is --ink, which is the topbar colour, so reusing
+     it here rendered a tile at 1.05:1 against its own background. */
+  color: var(--card);
 }
+.topbar .wordmark:hover .wordmark-mark { color: #4FA3D1; }
 .tagline { color: #AEBECE; font-size: 12.5px; }
 .topbar nav { display: flex; gap: .9rem; margin-left: auto; font-family: var(--mono); font-size: 11px; }
 .topbar nav a { color: #AEBECE; text-decoration: none; border-bottom: 1px solid #3C4C5E; padding-bottom: 1px; }
@@ -352,7 +346,11 @@ textarea:focus, select:focus, input[type="text"]:focus {
 .ctx-note { font-size: 10px; line-height: 1.6; letter-spacing: .04em; text-transform: none; color: var(--ink-faint); margin-top: .6rem; }
 
 .meter { display: flex; height: 12px; border: 1px solid var(--rule); background: var(--paper); overflow: hidden; }
-.meter-seg { display: block; height: 100%; }
+/* Width is driven by a custom property rather than an inline style. The API
+   runs under `style-src 'self'`, which blocks both a style attribute in the
+   markup and a direct .style.width assignment, so the meter never filled in.
+   setProperty on a custom property is CSSOM, not parsed style, so it passes. */
+.meter-seg { display: block; height: 100%; width: var(--seg, 0%); }
 .seg-automated { background: var(--green); }
 .seg-assisted { background: var(--amber); }
 .seg-manual { background: var(--rule); }
@@ -451,25 +449,33 @@ code { font-family: var(--mono); font-size: .88em; }
 
 @media (max-width: 1100px), (max-height: 600px) {
   html, body { height: auto; }
-  body.app { height: auto; min-height: 100dvh; display: block; overflow: auto; }
+  html { height: auto; }
+  /* Axis-specific, never the shorthand: `overflow: auto` here would undo the
+     x-axis clip declared at the top of the file. */
+  body.app {
+    height: auto; min-height: 100dvh; display: block;
+    overflow-x: hidden; overflow-y: visible;
+  }
   .topbar { position: sticky; top: 0; z-index: 50; flex-wrap: wrap; min-height: var(--topbar); padding-block: .4rem; }
   .workspace { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--gap); }
   .panel { grid-template-rows: auto auto auto auto; }
   .panel-scroll { overflow: visible; max-height: none; }
   .col-results .panel-scroll { min-height: 14rem; }
   .statusbar {
-    flex-wrap: wrap; align-items: flex-start;
-    height: auto; min-height: var(--statusbar);
+    display: flex; flex-wrap: wrap; align-items: flex-start;
+    height: auto; min-height: var(--statusbar); max-width: 100%;
     white-space: normal; overflow: visible;
-    padding-block: .55rem; gap: .45rem 1rem;
-    line-height: 1.5;
+    padding-block: .6rem .8rem; gap: .4rem 1rem;
+    line-height: 1.55;
   }
   .counts { flex-wrap: wrap; }
   .credit {
     margin-left: 0; white-space: normal;
     overflow: visible; text-overflow: clip;
-    flex: 1 1 100%;
+    flex: 1 1 100%; min-width: 0; overflow-wrap: anywhere;
   }
+  .counts { flex: 1 1 100%; min-width: 0; }
+  .build { flex: 1 1 100%; min-width: 0; overflow-wrap: anywhere; }
 }
 
 @media (max-width: 620px) {

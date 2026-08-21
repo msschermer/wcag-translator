@@ -1,12 +1,3 @@
-// Console client.
-//
-// Builds DOM nodes rather than HTML strings: no escaping bugs, and the page
-// runs under a strict CSP with no inline script or style.
-//
-// Every input mode funnels into the same renderer, because the API deliberately
-// returns the same result shape whether the input was a sentence, a checker
-// rule id, or a whole scanner report.
-
 const $ = (selector) => document.querySelector(selector);
 
 const el = (tag, className, text) => {
@@ -751,7 +742,9 @@ function renderCoverage(coverage) {
     [".seg-manual", coverage["manual-only"]]
   ];
   for (const [selector, value] of segments) {
-    $(selector).style.width = `${(value / total) * 100}%`;
+    // setProperty on a custom property rather than .style.width: the strict
+    // CSP blocks inline style, and this keeps the header intact.
+    $(selector).style.setProperty("--seg", `${(value / total) * 100}%`);
   }
 
   $("#cov-automated").textContent = coverage.automated;
